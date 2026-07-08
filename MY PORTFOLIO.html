@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mohamed Shaliq — Office Administrator | Professional Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-dark: #0a0f1d;
+    --panel-bg: rgba(18, 26, 47, 0.65);
+    --border-glow: rgba(0, 242, 254, 0.25);
+    --neon-cyan: #00f2fe;
+    --neon-violet: #9b51e0;
+    --neon-amber: #ffb347;
+    --text-primary: #f0f4f8;
+    --text-secondary: #94a3b8;
+    --max-width: 960px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; overflow-x: hidden; }
+  
+  body {
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  /* ===== 3D CANVAS BACKGROUND ===== */
+  #canvas-bg {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background: radial-gradient(circle at 50% 30%, #111a33 0%, #060913 100%);
+  }
+
+  .vignette-layer {
+    position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background: radial-gradient(circle at 50% 50%, transparent 20%, rgba(10, 15, 29, 0.7) 100%);
+  }
+
+  /* ===== PROGRESS BAR ===== */
+  #scroll-progress {
+    position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+    background: linear-gradient(90deg, var(--neon-cyan), var(--neon-violet));
+    box-shadow: 0 0 12px var(--neon-cyan);
+    z-index: 1000;
+    transition: width 0.1s linear;
+  }
+
+  .container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 80px 24px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ===== LUXURY HOVER CARDS ===== */
+  .glass-card {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-glow);
+    border-radius: 16px;
+    padding: 35px;
+    margin-bottom: 40px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transform: perspective(1000px);
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.4s, box-shadow 0.4s;
+  }
+  .glass-card:hover {
+    transform: perspective(1000px) translateY(-6px) scale(1.01);
+    border-color: var(--neon-cyan);
+    box-shadow: 0 30px 60px rgba(0, 242, 254, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  /* ===== HERO HEADER ===== */
+  header.hero-section {
+    text-align: center;
+    margin-bottom: 60px;
+    position: relative;
+  }
+  .status-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--neon-cyan);
+    background: rgba(0, 242, 254, 0.08);
+    border: 1px solid rgba(0, 242, 254, 0.3);
+    padding: 6px 16px;
+    border-radius: 30px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .status-tag::before {
+    content: ''; display: block; width: 8px; height: 8px; background: var(--neon-cyan);
+    border-radius: 50%; box-shadow: 0 0 10px var(--neon-cyan);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+  h1.profile-name {
+    font-size: clamp(2.5rem, 7vw, 4rem);
+    font-weight: 800;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, #ffffff 30%, #a5b4fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 12px;
+  }
+  .role-subtitle {
+    font-size: 1.2rem;
+    color: var(--neon-amber);
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-bottom: 25px;
+  }
+
+  /* ===== CONTACT VECTOR STRIP ===== */
+  .contact-strip {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 16px;
+    font-family: 'JetBrains Mono', monospace; font-size: 14px;
+  }
+  .contact-strip a {
+    color: var(--text-primary); text-decoration: none;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 8px 16px; border-radius: 8px; transition: 0.3s;
+  }
+  .contact-strip a:hover {
+    background: rgba(0, 242, 254, 0.1); border-color: var(--neon-cyan);
+    color: var(--neon-cyan); text-shadow: 0 0 8px rgba(0, 242, 254, 0.4);
+  }
+
+  /* ===== SECTION TITLE ===== */
+  .sec-title {
+    font-size: 1.3rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 2px; color: #fff; margin-bottom: 20px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .sec-title::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border-glow), transparent); }
+
+  /* ===== SKILLS BADGES ===== */
+  .skills-wrapper { display: flex; flex-wrap: wrap; gap: 12px; }
+  .skill-node {
+    font-family: 'JetBrains Mono', monospace; font-size: 13px;
+    background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--text-secondary); padding: 8px 16px; border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+  .skill-node:hover {
+    border-color: var(--neon-cyan); color: #fff; background: rgba(0, 242, 254, 0.05);
+    transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 242, 254, 0.1);
+  }
+
+  /* ===== EXPERIENCE LOG ===== */
+  .exp-timeline { border-left: 2px solid rgba(0, 242, 254, 0.3); padding-left: 25px; position: relative; }
+  .exp-marker {
+    position: absolute; left: -6px; top: 6px; width: 10px; height: 10px;
+    background: var(--neon-cyan); border-radius: 50%; box-shadow: 0 0 12px var(--neon-cyan);
+  }
+  .exp-role { font-size: 1.25rem; font-weight: 700; color: #fff; }
+  .exp-meta { font-family: 'JetBrains Mono', monospace; color: var(--neon-amber); font-size: 14px; margin: 4px 0 15px; }
+  .exp-list li { margin-bottom: 10px; color: var(--text-secondary); list-style-type: square; margin-left: 18px; }
+  .exp-list li::marker { color: var(--neon-cyan); }
+
+  /* ===== CONTROL DECK FOR FILTERS ===== */
+  .control-deck { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
+  .filter-btn-group { display: flex; gap: 10px; }
+  .filter-btn {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; background: transparent;
+    color: var(--text-secondary); border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 8px 16px; border-radius: 30px; cursor: pointer; transition: 0.3s;
+  }
+  .filter-btn.active, .filter-btn:hover {
+    border-color: var(--neon-cyan); color: #fff; background: rgba(0, 242, 254, 0.05);
+    box-shadow: 0 0 10px rgba(0, 242, 254, 0.2);
+  }
+
+  /* ===== GRID NODE SYSTEMS ===== */
+  .cert-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+  .cert-card-link { text-decoration: none; color: inherit; display: block; }
+  .cert-node {
+    background: rgba(10, 15, 29, 0.4); border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px; padding: 22px; position: relative; transition: all 0.3s; height: 100%;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .cert-card-link:hover .cert-node {
+    border-color: var(--neon-cyan); background: rgba(0, 242, 254, 0.02);
+    transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  }
+  .mini-stamp {
+    position: absolute; top: 18px; right: 18px; font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; color: var(--neon-violet); border: 1px dashed var(--neon-violet);
+    padding: 2px 6px; border-radius: 4px; text-transform: uppercase;
+  }
+  .verify-link {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--neon-cyan);
+    margin-top: 12px; display: inline-flex; align-items: center; gap: 4px; opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+  .cert-card-link:hover .verify-link { opacity: 1; }
+
+  /* ===== ISOMETRIC METER ===== */
+  .meter-container { margin-bottom: 24px; }
+  .meter-label { display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 13px; margin-bottom: 8px; }
+  .meter-track { height: 10px; background: rgba(255, 255, 255, 0.05); border-radius: 20px; overflow: hidden; }
+  .meter-fill {
+    height: 100%; width: 0; background: linear-gradient(90deg, var(--neon-cyan), var(--neon-violet));
+    box-shadow: 0 0 10px var(--neon-cyan); transition: width 1.5s cubic-bezier(0.1, 0.8, 0.2, 1);
+  }
+
+  /* Scroll Reveal State */
+  .reveal-sec { opacity: 0; transform: translateY(25px); transition: all 0.8s ease-out; }
+  .reveal-sec.active { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<div id="scroll-progress"></div>
+<canvas id="canvas-bg"></canvas>
+<div class="vignette-layer"></div>
+
+<div class="container">
+  
+  <!-- HERO SECTION -->
+  <header class="hero-section">
+    <div class="status-tag">Open To Work Framework</div>
+    <h1 class="profile-name">Mohamed Shaliq</h1>
+    <p class="role-subtitle">Office Administrator · Madurai, Tamil Nadu</p>
+    <div class="contact-strip">
+      <a href="tel:+918838971085">☎ +91 88389 71085</a>
+      <a href="mailto:mohamedshaliq135@gmail.com">✉ mohamedshaliq135@gmail.com</a>
+      <a href="https://www.linkedin.com/in/mohamed-shaliq-8a0841420" target="_blank">⚓ LinkedIn Profile ↗</a>
+    </div>
+  </header>
+
+  <!-- SUMMARY -->
+  <section class="glass-card reveal-sec">
+    <h2 class="sec-title">01 // Summary</h2>
+    <p style="color: var(--text-secondary); font-size: 1.05rem; line-height: 1.8;">
+      Detail-oriented <strong style="color: #fff; font-weight: 600;">Office Administrator</strong> based in Madurai, with hands-on experience running day-to-day office operations, bookkeeping, and inventory records on Tally ERP. Backed by a deliberately broad training record — accounting, statutory compliance, payroll, digital marketing, and foundational programming — built up one certificate at a time. Comfortable keeping the books balanced and the paperwork moving.
+    </p>
+  </section>
+
+  <!-- SKILLS -->
+  <section class="glass-card reveal-sec">
+    <h2 class="sec-title">02 // Core Skills Protocol</h2>
+    <div class="skills-wrapper">
+      <div class="skill-node">Office Administration</div>
+      <div class="skill-node">Tally ERP / TallyPrime</div>
+      <div class="skill-node">Bookkeeping & Accounting</div>
+      <div class="skill-node">Accounts Payable & Receivable</div>
+      <div class="skill-node">MIS Reporting</div>
+      <div class="skill-node">Inventory Management</div>
+      <div class="skill-node">Payroll & HR Administration</div>
+      <div class="skill-node">MS Office</div>
+      <div class="skill-node">Web Design</div>
+      <div class="skill-node">Web Applications</div>
+      <div class="skill-node">Business Writing</div>
+      <div class="skill-node">Typewriting — 30 WPM</div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section class="glass-card reveal-sec">
+    <h2 class="sec-title">03 // Operation Log</h2>
+    <div class="exp-timeline">
+      <div class="exp-marker"></div>
+      <h3 class="exp-role">Office Administrator</h3>
+      <p class="exp-meta">2023 — Present // Zap Menswear, Madurai</p>
+      <ul class="exp-list">
+        <li>Manage daily office administration, including documentation, record-keeping, and correspondence.</li>
+        <li>Handle bookkeeping and accounting tasks using Tally ERP.</li>
+        <li>Maintain inventory and business records to support smooth operations.</li>
+        <li>Support web-based applications and basic web design tasks for business needs.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- CERTIFICATIONS GRID WITH FILTERS -->
+  <section class="glass-card reveal-sec">
+    <div class="control-deck">
+      <h2 class="sec-title" style="margin-bottom:0;">04 // Certifications Inventory</h2>
+      <div class="filter-btn-group">
+        <button class="filter-btn active" data-filter="all">ALL</button>
+        <button class="filter-btn" data-filter="financial">FINANCIAL & ADMIN</button>
+        <button class="filter-btn" data-filter="tech">TECH & DATA</button>
+      </div>
+    </div>
+
+    <div class="cert-grid" id="certGrid">
+      
+      <!-- Typewriting English -->
+      <div class="cert-node" data-cat="financial">
+        <div class="mini-stamp">TN GOV</div>
+        <div>
+          <h4 style="color:#fff; margin-bottom:6px; padding-right:60px; font-size:15px;">Typewriting English — Junior Grade</h4>
+          <p style="font-size:13px; color:var(--text-secondary);">Department of Technical Education, Government of Tamil Nadu</p>
+          <p style="font-size:12px; color:var(--neon-amber); font-weight:600; margin-top:4px;">30 WPM — First Class with Distinction</p>
+        </div>
+        <p style="font-family:'JetBrains Mono'; font-size:12px; color:var(--neon-cyan); margin-top:12px;">AUG 2023</p>
+      </div>
+
+      <!-- MS Office & Tally Prime -->
+      <div class="cert-node" data-cat="financial">
+        <div class="mini-stamp">ITCE</div>
+        <div>
+          <h4 style="color:#fff; margin-bottom:6px; padding-right:50px; font-size:15px;">MS Office & Tally Prime</h4>
+          <p style="font-size:13px; color:var(--text-secondary);">I-TECH Computer Education, Madurai</p>
+          <p style="font-size:12px; color:var(--neon-amber); font-weight:600; margin-top:4px;">Secured Grade A</p>
+        </div>
+        <p style="font-family:'JetBrains Mono'; font-size:12px; color:var(--neon-cyan); margin-top:12px;">AUG 2023</p>
+      </div>
+
+      <!-- Fundamentals of Accounting and Reporting -->
+      <a href="https://coursera.org/verify/WCMJWKFJCE62" target="_blank" class="cert-card-link">
+        <div class="cert-node" data-cat="financial">
+          <div class="mini-stamp">TEPL</div>
+          <div>
+            <h4 style="color:#fff; margin-bottom:6px; font-size:15px;">Fundamentals of Accounting and Reporting</h4>
+            <p style="font-size:13px; color:var(--text-secondary);">Tally Education, via Coursera</p>
+            <span class="verify-link">🔗 Verify Credential ↗</span>
+          </div>
+          <p style="font-family:'JetBrains Mono'; font-size:12px; color:var(--neon-cyan); margin-top:12px;">APR 2025</p>
+        </div>
+      </a>
+
+      <!-- Basics of Statutory Compliance and Taxation -->
+      <a href="https://coursera.org/verify/H91K0K9DFFRE" target="_blank" class="cert-card-link">
+        <div class="cert-node" data-cat="financial">
+          <div class="mini-stamp">TEPL</div>
+          <div>
+            <h4 style="color:#fff; margin-bottom:6px; font-size:15px;">Basics of Statutory Compliance and Taxation</h4>
+            <p style="font-size:13px; color:var(--text-secondary);">Tally Education, via Coursera</p>
+            <span class="verify-link">🔗 Verify Credential ↗</span>
+          </div>
+          <p style="font-family:'JetBrains Mono'; font-size:12px; color:var(--neon-cyan); margin-top:12px;">MAY 2025</p>
+        </div>
+      </a>
+
+      <!-- Financial Business Accounting and MIS Reports -->
+      <a href="https://coursera.org/verify/6IELBR0FW6UU" target="_blank" class="cert-card-link">
+        <div class="cert-node" data-cat="financial">
+          <div class="mini-stamp">TEPL</div>
+          <div>
+            <h4 style="color:#fff; margin-bottom:6px; font-size:15px;">Financial Business Accounting & MIS Reports</h4>
+            <p style="font-size:13px; color:var(--text-secondary);">Tally Education, via Coursera</p>
+            <span class="verify-link">🔗 Verify Credential ↗</span>
+          </div>
+          <p style="font-family:'JetBrains Mono'; font-size:12px; color:var(--neon-cyan); margin-top:12px;">MAY 2025</p>
+        </div>
+      </a>
+
+      <!-- Inventory Management -->
+      <a href="https://coursera.org/verify/RE6NP6WNOYXY" target="_blank" class="cert-card-link">
+        <div class="cert-node" data-cat="financial">
+          <div class="mini-stamp">TEPL</div>
+          <div>
+            <h4 style="color:#fff; margin-bottom:6px; font-size:15px;">Inventory Management</h4>
+            <p style="font-size:13px; color:var(--text-secondary);">Tally Education, via Coursera</p>
+            <span class="verify-link">🔗 Verify Credential ↗</span>
+          </div>
+          <p style="font-family:'JetBrains Mono'; font-size:12px; color:var(--neon-cyan); margin-top:12px;">MAY 2025</p>
+        </div>
+      </a>
+
+      <!-- Payroll & HR Management -->
+      <a href="https://coursera.org/verify/SP1ABJBPZRED" target="_blank" class="cert-card-link">
+        <div class="cert-node" data-cat="financial">
+          <div class="mini-stamp">TEPL</div>
+          <div>
+            <h4 style="color:#fff; margin-bottom:6px; font-size:15px;">Payroll & HR Management</h4>
+            <p style="font-size:13px; color:var(--text-secondary);">Tally Education, via Coursera</p>
+            <span class="verify-link">🔗 Verify Credential ↗</span>
+          </div>
+          <p style="font-family:'JetBrains Mono'; font-size:12px; color:var(--neon-cyan); margin-top:12px;">MAY 2025</p>
+        </div>
+      </a>
+
+      <!-- Foundations of Digital Marketing and E-commerce -->
+      <a href="https://coursera.org/verify/M6QY5C8M609U" target="_blank" class="cert-card-link">
+        <div class="cert-node" data-cat="tech">
+          <div class="mini-stamp">GOOGLE</div>
+          <div>
+            <h4 style="color:#fff; margin-bottom:6px; font-size:15px;">Foundations of Digital Marketing & E-commerce</h4>
+            <p style="font-size:13px; color:var(--text-secondary);">Google, via Coursera</p>
+            <span class="verify-link">🔗 Verify Credential ↗</span>
+          </div>
+          <p style="font-family:'JetBrains Mono'; font-size:12px; color:var(--neon-cyan); margin-top:12px;">JUN 2025</p>
+        </div>
+      </a>
+
+      <!-- Excel Basics for Data Analysis -->
+      <a href="https://coursera.org/verify/6NXDH5L8OBJZ" target="_blank" class="cert-card-link">
+        <div class="cert-node" data-cat="tech">
+          <div class="mini-stamp">IBM</div>
+          <div>
+            <h4 style="color:#fff; margin-bottom:6px; font-size:15px;">Excel Basics for Data Analysis</h4>
+            <p style="font-size:13px; color:var(--text-secondary);">IBM, via Coursera</p>
+            <span class="verify-link">🔗 Verify Credential ↗</span>
+          </div>
+          <p style="font-family:'JetBrains Mono'; font-size:12px; color:var(--neon-cyan); margin-top:12px;">JUN 2025</p>
+        </div>
+      </a>
+
+      <!-- MongoDB Basics for Students -->
+      <a href="https://www.credly.com/badges/6e3d9632-a6eb-46b1-83c3-84f1ec74ec3a" target="_blank" class="cert-card-link">
+        <div class="cert-node" data-cat="tech">
+          <div class="mini-stamp">MDB</div>
+          <div>
+            <h4 style="color:#fff; margin-bottom:6px; font-size:15px;">MongoDB Basics for Students</h4>
+            <p style="font-size:13px; color:var(--text-secondary);">MongoDB, Inc.</p>
+            <span class="verify-link">🔗 Verify Credential ↗</span>
+          </div>
+          <p style="font-family:'JetBrains Mono'; font-size:12px; color:var(--neon-cyan); margin-top:12px;">SEP 2025</p>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- LANGUAGES -->
+  <section class="glass-card reveal-sec">
+    <h2 class="sec-title">05 // Language Metrics</h2>
+    <div class="meter-container">
+      <div class="meter-label"><span>Tamil Protocol (Native)</span><span>100%</span></div>
+      <div class="meter-track"><div class="meter-fill" data-value="100"></div></div>
+    </div>
+    <div class="meter-container">
+      <div class="meter-label"><span>English Protocol (Professional)</span><span>78%</span></div>
+      <div class="meter-track"><div class="meter-fill" data-value="78"></div></div>
+    </div>
+  </section>
+
+</div>
+
+<!-- THREE.JS INTERACTIVE ADVANCED CORE ENGINE -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+  // 1. Scroll Progress Logic
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    document.getElementById('scroll-progress').style.width = (isFinite(scrolled) ? scrolled : 0) + '%';
+  });
+
+  // 2. WebGL 3D Constellation Layer
+  const canvas = document.getElementById('canvas-bg');
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  // Generate Geometric Wireframe Constellation
+  const particleCount = 100;
+  const geometry = new THREE.BufferGeometry();
+  const positions = new Float32Array(particleCount * 3);
+  const speeds = [];
+
+  for(let i=0; i<particleCount * 3; i+=3) {
+    positions[i] = (Math.random() - 0.5) * 40;
+    positions[i+1] = (Math.random() - 0.5) * 40;
+    positions[i+2] = (Math.random() - 0.5) * 40;
+    
+    speeds.push({
+      x: (Math.random() - 0.5) * 0.02,
+      y: (Math.random() - 0.5) * 0.02,
+      z: (Math.random() - 0.5) * 0.02
+    });
+  }
+
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  
+  const mat = new THREE.PointsMaterial({
+    size: 0.25,
+    color: 0x00f2fe,
+    transparent: true,
+    opacity: 0.8
+  });
+
+  const constellation = new THREE.Points(geometry, mat);
+  scene.add(constellation);
+
+  // Connect lines between close nodes
+  const lineMat = new THREE.LineBasicMaterial({ color: 0x9b51e0, transparent: true, opacity: 0.12 });
+  let lineMesh = new THREE.LineSegments(new THREE.BufferGeometry(), lineMat);
+  scene.add(lineMesh);
+
+  camera.position.z = 20;
+
+  // Mouse interactivity mechanics
+  let mouseX = 0, mouseY = 0;
+  window.addEventListener('mousemove', (e) => {
+    mouseX = (e.clientX / window.innerWidth) - 0.5;
+    mouseY = (e.clientY / window.innerHeight) - 0.5;
+  });
+
+  // Render Frame Loop
+  function animateScene() {
+    requestAnimationFrame(animateScene);
+
+    const posAttr = constellation.geometry.attributes.position;
+    
+    // Slow node locomotion
+    for(let i=0; i<particleCount; i++) {
+      posAttr.array[i*3] += speeds[i].x;
+      posAttr.array[i*3+1] += speeds[i].y;
+      posAttr.array[i*3+2] += speeds[i].z;
+
+      // Boundary check
+      if(Math.abs(posAttr.array[i*3]) > 20) speeds[i].x *= -1;
+      if(Math.abs(posAttr.array[i*3+1]) > 20) speeds[i].y *= -1;
+    }
+    posAttr.needsUpdate = true;
+
+    // Dynamically rebuild connections
+    const linePositions = [];
+    for (let i = 0; i < particleCount; i++) {
+      for (let j = i + 1; j < particleCount; j++) {
+        const dx = posAttr.array[i*3] - posAttr.array[j*3];
+        const dy = posAttr.array[i*3+1] - posAttr.array[j*3+1];
+        const dz = posAttr.array[i*3+2] - posAttr.array[j*3+2];
+        const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
+
+        if (dist < 7) { // Connect nodes closer than 7 units
+          linePositions.push(posAttr.array[i*3], posAttr.array[i*3+1], posAttr.array[i*3+2]);
+          linePositions.push(posAttr.array[j*3], posAttr.array[j*3+1], posAttr.array[j*3+2]);
+        }
+      }
+    }
+    lineMesh.geometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
+
+    // Responsive fluid camera reaction to mouse movement
+    camera.position.x += (mouseX * 8 - camera.position.x) * 0.05;
+    camera.position.y += (-mouseY * 8 - camera.position.y) * 0.05;
+    camera.lookAt(scene.position);
+
+    renderer.render(scene, camera);
+  }
+  animateScene();
+
+  // 3. Scroll Reveal Optimization Index
+  const sections = document.querySelectorAll('.reveal-sec');
+  const scrollObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting) {
+        entry.target.classList.add('active');
+        const fills = entry.target.querySelectorAll('.meter-fill');
+        fills.forEach(f => f.style.width = f.dataset.value + '%');
+      }
+    });
+  }, { threshold: 0.1 });
+
+  sections.forEach(s => scrollObserver.observe(s));
+
+  // 4. Interactive Category Filters
+  const buttons = document.querySelectorAll('.filter-btn');
+  const gridItems = document.querySelectorAll('.cert-grid > *');
+
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      
+      const filter = btn.dataset.filter;
+      gridItems.forEach(item => {
+        // Resolve target node even if wrapped in <a> anchor tags
+        const node = item.classList.contains('cert-node') ? item : item.querySelector('.cert-node');
+        if(filter === 'all' || node.dataset.cat === filter) {
+          item.style.display = 'block';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    });
+  });
+
+  // Window Resize System Broadcast
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+</script>
+
+</body>
+</html>
